@@ -1,0 +1,22 @@
+{
+  "name": "employeestructure",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/H0PE467/EmployeeStructure.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/H0PE467/EmployeeStructure/issues"
+  },
+  "homepage": "https://github.com/H0PE467/EmployeeStructure#readme",
+  "dependencies": {
+    "inquirer": "^8.0.0"
+  }
+}
