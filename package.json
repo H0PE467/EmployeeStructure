@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/H0PE467/EmployeeStructure#readme",
   "dependencies": {
-    "inquirer": "^8.0.0"
+    "express": "^4.18.1",
+    "inquirer": "^8.0.0",
+    "mysql2": "^2.3.3"
   }
 }
