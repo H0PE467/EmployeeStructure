@@ -220,7 +220,6 @@ const getEmployeeNames = async () => {
         console.log(error);
     };
 }
-
 const getDepartmentTable = async () => {
     try{
         let results = await new Promise((reject, resolve) => db.query('SELECT * FROM company_db.department', (err, results) => {
@@ -235,7 +234,6 @@ const getDepartmentTable = async () => {
         console.log(error);
     };
 }
-
 const getRoleTable = async () => {
     console.log('hello');
     try{
@@ -253,7 +251,6 @@ const getRoleTable = async () => {
         console.log(error);
     };
 }
-
 const getEmployeeTable = async () => {
     try{
         let results = await new Promise((reject, resolve) => db.query('SELECT * FROM company_db.employee', (err, results) => {
