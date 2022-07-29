@@ -27,7 +27,7 @@ const db = mysql.createConnection(
 let listOfDepartmentIds;
 let listOfRoleIds;
 let listOfEmployeeIds;
-
+let listOfEmployeeNames;
 
 // - - - - - - - - - - - - - - -
 // Questions
@@ -43,19 +43,19 @@ const menuOptions = [
 const departmentQuestions = [
     {
         type: 'input',
-        message: `Department's Name: `,
+        message: `New Department's Name: `,
         name: 'name',
     }
 ]
 const roleQuestions = [
     {
         type: 'input',
-        message: `Role's Title: `,
+        message: `New Role's Title: `,
         name: 'title',
     },
     {
         type: 'input',
-        message: `Role's Salary: `,
+        message: `New Role's Salary: `,
         name: 'salary',
         validate: (input) => {
             if (!isNaN(input)) {
@@ -71,7 +71,7 @@ const roleQuestions = [
     },
     {
         type: 'list',
-        message: `Role's Department Id: `,
+        message: `New Role's Department Id: `,
         name: 'departmentId',
         choices: () => {
             return listOfDepartmentIds;
@@ -81,17 +81,17 @@ const roleQuestions = [
 const employeeQuestions = [
     {
         type: 'input',
-        message: `Employee's First Name: `,
+        message: `New Employee's First Name: `,
         name: 'firstName',
     },
     {
         type: 'input',
-        message: `Employee's Last Name: `,
+        message: `New Employee's Last Name: `,
         name: 'lastName',
     },
     {
         type: 'list',
-        message: `Employee's Role Id: `,
+        message: `New Employee's Role Id: `,
         name: 'roleId',
         choices: () => {
             return listOfRoleIds;
@@ -99,7 +99,7 @@ const employeeQuestions = [
     },
     {
         type: 'list',
-        message: `Employee's Manager Id: `,
+        message: `New Employee's Manager Id: `,
         name: 'managerId',
         choices: () => {
             return listOfEmployeeIds;
@@ -112,7 +112,7 @@ const updateQuestions = [
         message: `Employee: `,
         name: 'name',
         choices: () => {
-            return listOfEmployeeIds;
+            return listOfEmployeeNames;
         } 
     },
     {
@@ -145,7 +145,7 @@ const newEmployee = async() => {
     return decision;
 }
 const updateEmployee = async() => {
-    const decision = await inquirer.prompt([updateQuestions])
+    const decision = await inquirer.prompt(updateQuestions)
     return decision;
 }
 
@@ -154,15 +154,6 @@ const updateEmployee = async() => {
 // - - - - - - - - - - - - - - -
 
 //          Getters
-// function getDepartmentIds(newRole) {
-//     db.query(
-//         'SELECT id FROM company_db.department;',
-//         function (err, results) {
-//             listOfDepartmentIds = ['null']
-//             results.forEach((cell) => listOfDepartmentIds.push(cell.id))
-//         }
-//     );
-// }
 const getDepartmentIds = async () => {
     try{
         let results = await new Promise((reject, resolve) => db.query('SELECT id FROM company_db.department', (err, results) => {
@@ -172,7 +163,7 @@ const getDepartmentIds = async () => {
                 listOfDepartmentIds = ['null']
                 results.forEach((cell) => listOfDepartmentIds.push(cell.id.toString()))
                 listOfDepartmentIds.sort()
-                resolve(results)
+                resolve('')
             }
         }))
     }catch(error){
@@ -188,7 +179,7 @@ const getRoleIds = async () => {
                 listOfRoleIds = ['null']
                 results.forEach((cell) => listOfRoleIds.push(cell.id.toString()))
                 listOfRoleIds.sort()
-                resolve(results)
+                resolve('')
             }
         }))
     }catch(error){
@@ -204,13 +195,80 @@ const getEmployeeIds = async () => {
                 listOfEmployeeIds = ['null']
                 results.forEach((cell) => listOfEmployeeIds.push(cell.id.toString()))
                 listOfEmployeeIds.sort()
-                resolve(results)
+                resolve('')
             }
         }))
     }catch(error){
         console.log(error);
     };
 }
+const getEmployeeNames = async () => {
+    try{
+        let results = await new Promise((reject, resolve) => db.query('SELECT first_name,last_name FROM company_db.employee', (err, results) => {
+            if(err){
+                reject(err);
+            }else{
+                listOfEmployeeNames = [];
+                results.forEach((cell) => {
+                    let newString = `${cell.first_name} ${cell.last_name}`;
+                    listOfEmployeeNames.push(newString)
+                })
+            }
+            resolve('')
+        }))
+    }catch(error){
+        console.log(error);
+    };
+}
+
+const getDepartmentTable = async () => {
+    try{
+        let results = await new Promise((reject, resolve) => db.query('SELECT * FROM company_db.department', (err, results) => {
+            if(err){
+                reject(err);
+            }else{
+                console.table(results);
+                resolve('')
+            }
+        }))
+    }catch(error){
+        console.log(error);
+    };
+}
+
+const getRoleTable = async () => {
+    console.log('hello');
+    try{
+        console.log('hello2');
+        let results = await new Promise((reject, resolve) => db.query('SELECT * FROM company_db.role', (err, results) => {
+            if(err){
+                reject(err);
+            }else{
+                console.log('hello3');
+                console.table(results);
+                resolve('')
+            }
+        }))
+    }catch(error){
+        console.log(error);
+    };
+}
+
+const getEmployeeTable = async () => {
+    try{
+        let results = await new Promise((reject, resolve) => db.query('SELECT * FROM company_db.employee', (err, results) => {
+            if(err){
+                reject(err);
+            }else{
+                console.table(results);
+                resolve('')
+            }
+        }))
+    }catch(error){
+        console.log(error);
+    };
+}
+
 
 //          Setters
 function departmentIntoDB(name) {
@@ -260,10 +318,12 @@ function employeeIntoDB(first_name, last_name, roleId, managerId) {
         }
     );
 }
-function employeeUpdateInDB(name, role) {
+function employeeUpdateInDB(employeeName, roleId) {
+    let names = employeeName.split(' ')
+
     db.query(
-        'INSERT INTO () VALUES (?,?)',
-        [name, role],
+        'UPDATE company_db.employee SET role_id = ? WHERE first_name = ? AND last_name = ?',
+        [roleId, names[0], names[1]],
         function (err, results) {
         }
     );
@@ -281,6 +341,15 @@ const main = async() => {
     do {
         opt = await menu();
 
+        if (opt.menuOption == 'View all Departments') {
+            await getDepartmentTable();
+        }
+        if (opt.menuOption == 'View all Roles') {
+            await getRoleTable();  
+        }
+        if (opt.menuOption == 'View all Employees') {
+            await getEmployeeTable();
+        }
         if (opt.menuOption == 'Add a Department') {
             info = await newDepartment();
             departmentIntoDB(info.name)
@@ -301,62 +370,17 @@ const main = async() => {
         }
         if (opt.menuOption == 'Update an Employee Role') {
             await getRoleIds().then(async () => {
-                await getEmployeeIds().then(async () => {
+                await getEmployeeNames().then(async () => {
                     info = await updateEmployee();
                     employeeUpdateInDB(info.name, info.role);
                 })
             })
         }
-        // switch (opt.menuOption) {
-        //     case 'View All Departments':
-                
-        //         break;
-        //     case 'View All Roles':
-            
-        //         break;
-        //     case 'View all employees':
-                
-        //         break;
-        //     case 'Add a department':
-        //         info = await newDepartment();
-        //         departmentIntoDB(info.name)
-        //         break;
-        //     case 'Add a role':
-        //         getDepartmentIds().then(async () => {
-        //             info = await newRole();
-        //             roleIntoDB(info.title, info.salary, info.departmentId);
-        //         }).then(break)
-                
-        //     case 'Add an Employee':
-        //         info = await newEmployee();
-        //         employeeIntoDB(info.first_name, info.last_name, info.roleId ,info.managerId);
-        //         break;
-        //     case 'Update an Employee Role':
-        //         info = await updateEmployee();
-        //         employeeUpdateInDB(info.name, info.role);
-        //         break;
-        // }
 
     } while (opt.menuOption != 'Exit');
 }
 
 main();
-
-// getDepartmentIds().then(() => {
-//     console.log('Completed');
-//     console.log(listOfDepartmentIds);
-// })
-
-
-/*
-
-    Todo:
-        -Checar que inserte correctamente
-        -Si se puede, updatear las opciones
-        -Replace
-        -Tablas
-
-*/
 
 
 app.use((req, res) => {
