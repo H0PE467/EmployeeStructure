@@ -318,9 +318,16 @@ function employeeIntoDB(first_name, last_name, roleId, managerId) {
 function employeeUpdateInDB(employeeName, roleId) {
     let names = employeeName.split(' ')
 
+    let idRole;
+    if (roleId.length == 4) {
+        idRole = null;
+    }else{
+        idRole = Number(roleId);
+    }
+
     db.query(
         'UPDATE company_db.employee SET role_id = ? WHERE first_name = ? AND last_name = ?',
-        [roleId, names[0], names[1]],
+        [idRole, names[0], names[1]],
         function (err, results) {
         }
     );
